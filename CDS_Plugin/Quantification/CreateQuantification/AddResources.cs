@@ -48,6 +48,7 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                         ResourceTable newResource = docTakeoff.Resources;
                         NavisworksParameter p = cmd.CreateParameter();
                         p.ParameterName = "@resourceId";
+                        int a = 0;
 
                     }
                     trans.Commit();
