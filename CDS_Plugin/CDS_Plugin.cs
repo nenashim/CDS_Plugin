@@ -27,7 +27,7 @@ using CDS_Plugin.Quantification.CreateQuantification;
 
 namespace CDS_Plugin
 {
-
+    //ddddd
     // Добавление панели (с ссылкой на xaml на оформление), добавление кнопок с ссылками на иконки.
     [Plugin("AddinRibbon", "CDS", DisplayName = "AddinRibbon")]
     [RibbonLayout("CDSRibbon.xaml")]
@@ -52,7 +52,8 @@ namespace CDS_Plugin
     [Command("Add_all_p_xlsx", Icon = "Add_all_p_xlsx_16.png", LargeIcon = "Add_all_p_xlsx_32.png", ToolTip = "Добавить свойства для ПТО ей модели")]
     [Command("Add_el_p_xlsx", Icon = "Add_el_p_xlsx_16.png", LargeIcon = "Add_el_p_xlsx_32.png", ToolTip = "Добавить свойства для ПТО по элементно")]
     [Command("SetSettings", Icon = "SetSetting_16px.png", LargeIcon = "SetSetting_32px.png", ToolTip = "Добавление поисковых наборов по параметрам")]
-    [Command("TestTab", Icon = "Test_Tab_16px.png", LargeIcon = "Test_Tab_32px.png", ToolTip = "Тест")]
+    [Command("AutoQuanti", Icon = "AutoQuanti_16px.png", LargeIcon = "AutoQuanti_32px.png", ToolTip = "Автоматически добавляет Quantification")]
+    //[Command("TestTab", Icon = "Test_Tab_16px.png", LargeIcon = "Test_Tab_32px.png", ToolTip = "Тест")]
     
     //[Command("AddCategory", Icon = "5_16.png", LargeIcon = "5_32.png", ToolTip = "Добавляет кастомные параметры в модель")]
     [Command("Export", Icon = "6_16.png", LargeIcon = "6_32.png", ToolTip = "Экспортирует параметры")]
@@ -155,20 +156,16 @@ namespace CDS_Plugin
                 case "Export":
                     var tp6 = new ExportQuantityPlugin(); 
                     tp6.Execute(parameters);
-                   
                     break;
+
+                //Кнопка 6 - экспортирует все элемены модели в xlsx
                 case "Test":
-                    var tp7 = new AddResources();
+                    MessageBox.Show("Тестовая кнопка");
+                    break;
+                case "AutoQuanti":
 
-                    try
-                    {
-                        tp7.Execute(parameters);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-
+                    CreateQuantification CreateQuantification = new CreateQuantification();
+                    CreateQuantification.Show();
                     break;
 
                 //Кнопка 7 - скопированно с Custom Ribbon

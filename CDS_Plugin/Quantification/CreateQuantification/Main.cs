@@ -20,8 +20,9 @@ namespace CDS_Plugin.Quantification.CreateQuantification
         {
             try
             {
+
                 if (!Directory.Exists(Params.temp_folder)) { Directory.CreateDirectory(Params.temp_folder); }
-                string base_search_set_folder = Microsoft.VisualBasic.Interaction.InputBox("Ввести имя папки с поисковыми запросами:", "Выбор папки", "Папка"); //папка задание
+                string base_search_set_folder = parameters[0]; //папка задание
 
                 if (base_search_set_folder == "")
                     return 0;

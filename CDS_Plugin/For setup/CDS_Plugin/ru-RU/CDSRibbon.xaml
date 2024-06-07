@@ -208,15 +208,30 @@
                             Text="Экспорт"
                             Orientation="Vertical"/>
 
-                <!--<local:NWRibbonButton x:Uid="Button_3.1" Id="Test"
+                <local:NWRibbonButton x:Uid="Button_3.1" Id="Test"
                            Size="Large"
                            KeyTip="B9"
                            ShowText="True"
                            Text="Тест"
-                           Orientation="Vertical"/>-->         
+                           Orientation="Vertical"/>         
 
             </RibbonPanelSource>
  
+        </RibbonPanel>
+        
+        <RibbonPanel x:Uid="RibbonPane4">
+            <RibbonPanelSource x:Uid="RibbonPanelSource_RibbonPanel_3" KeyTip="T4" Title="Quanti">
+
+
+                <local:NWRibbonButton x:Uid="Button_4.1" Id="AutoQuanti"
+                           Size="Large"
+                           KeyTip="B10"
+                           ShowText="True"
+                           Text="Auto"
+                           Orientation="Vertical"/>
+
+            </RibbonPanelSource>
+
         </RibbonPanel>
 
     </RibbonTab>

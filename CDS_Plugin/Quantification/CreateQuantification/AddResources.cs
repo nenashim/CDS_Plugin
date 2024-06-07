@@ -2,6 +2,7 @@
 using Autodesk.Navisworks.Api.Interop;
 using Autodesk.Navisworks.Api.Plugins;
 using Autodesk.Navisworks.Api.Takeoff;
+using CDS_Plugin.Properties;
 using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,25 @@ namespace CDS_Plugin.Quantification.CreateQuantification
 
                     using (NavisworksCommand cmd = docTakeoff.Database.Value.CreateCommand())
                     {
-                       // StepResourceTable resourceTable = docTakeoff.Resources;
                         NavisworksParameter p = cmd.CreateParameter();
+
+                        p = cmd.CreateParameter();
                         p.ParameterName = "@itemID";
+                        p.Value = itemId;
+                        cmd.Parameters.Add(p);
+
+                        p = cmd.CreateParameter();
+                        p.ParameterName = "@name";
+                        p.Value = name;
+                        cmd.Parameters.Add(p);
+
+                        p = cmd.CreateParameter();
+                        p.ParameterName = "@description";
+                        p.Value = description;
+                        cmd.Parameters.Add(p);
+
+                        cmd.CommandText = sql;
+                        cmd.ExecuteNonQuery();
 
                     }
                     trans.Commit();
@@ -45,22 +62,20 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                 {
                     using (NavisworksCommand cmd = docTakeoff.Database.Value.CreateCommand())
                     {
-                        ResourceTable newResource = docTakeoff.Resources;
+
+                        cmd.CommandText = "Select rowId FROM TK_ITEM WHERE name = @name";
+
                         NavisworksParameter p = cmd.CreateParameter();
                         p.ParameterName = "@resourceId";
-                        int a = 0;
+                        p.Value = resourceId;// последнее цифра в индексе wbs
+                        cmd.Parameters.Add(p);
 
+                        cmd.ExecuteNonQuery();
                     }
                     trans.Commit();
                 }
                 return 1;
             }
-
-           
-               
-
-                List<ResourceGroupTable> resources = new List<ResourceGroupTable>();
-              //  MessageBox.Show(resource.ToString());
 
             return 1;
 
