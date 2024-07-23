@@ -24,6 +24,7 @@ using CDS_Plugin.Quantification.ExportQuantity;
 using Microsoft.Office.Interop.Excel;
 using CDS_Plugin.Quantification.CreateTakeoff;
 using CDS_Plugin.Quantification.CreateQuantification;
+using CDS_Plugin.Classifier;
 
 namespace CDS_Plugin
 {
@@ -52,9 +53,10 @@ namespace CDS_Plugin
     [Command("Add_all_p_xlsx", Icon = "Add_all_p_xlsx_16.png", LargeIcon = "Add_all_p_xlsx_32.png", ToolTip = "Добавить свойства для ПТО ей модели")]
     [Command("Add_el_p_xlsx", Icon = "Add_el_p_xlsx_16.png", LargeIcon = "Add_el_p_xlsx_32.png", ToolTip = "Добавить свойства для ПТО по элементно")]
     [Command("SetSettings", Icon = "SetSetting_16px.png", LargeIcon = "SetSetting_32px.png", ToolTip = "Добавление поисковых наборов по параметрам")]
-    [Command("AutoQuanti", Icon = "AutoQuanti_16px.png", LargeIcon = "AutoQuanti_32px.png", ToolTip = "Автоматически добавляет Quantification")]
+    [Command("AutoQuantiAR", Icon = "AutoQuanti_16px.png", LargeIcon = "AutoQuantiAR_32px.png", ToolTip = "Автоматически добавляет Quantification")]
+    [Command("AutoQuantiKR", Icon = "AutoQuanti_16px.png", LargeIcon = "AutoQuantiKR_32px.png", ToolTip = "Автоматически добавляет Quantification")]
     //[Command("TestTab", Icon = "Test_Tab_16px.png", LargeIcon = "Test_Tab_32px.png", ToolTip = "Тест")]
-    
+
     //[Command("AddCategory", Icon = "5_16.png", LargeIcon = "5_32.png", ToolTip = "Добавляет кастомные параметры в модель")]
     [Command("Export", Icon = "6_16.png", LargeIcon = "6_32.png", ToolTip = "Экспортирует параметры")]
     [Command("Test", Icon = "6_16.png", LargeIcon = "6_32.png", ToolTip = "Тест")]
@@ -160,12 +162,17 @@ namespace CDS_Plugin
 
                 //Кнопка 6 - экспортирует все элемены модели в xlsx
                 case "Test":
-                    MessageBox.Show("Тестовая кнопка");
+                    var Classifier = new FindingClassifier();
+                    Classifier.Execute(parameters);
                     break;
-                case "AutoQuanti":
 
-                    CreateQuantification CreateQuantification = new CreateQuantification();
-                    CreateQuantification.Show();
+                case "AutoQuantiAR":
+                    CreateQuantification_AR CreateQuantificationAR = new CreateQuantification_AR();
+                    CreateQuantificationAR.Show();
+                    break;
+                case "AutoQuantiKR":
+                    CreateQuantification_KR CreateQuantificationKR = new CreateQuantification_KR();
+                    CreateQuantificationKR.Show();
                     break;
 
                 //Кнопка 7 - скопированно с Custom Ribbon

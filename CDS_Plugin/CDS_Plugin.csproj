@@ -175,6 +175,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classifier\FindingClassifier.cs" />
     <Compile Include="Ctr\FormRemark.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,11 +223,17 @@
     <Compile Include="Quantification\Common\XMLField.cs" />
     <Compile Include="Quantification\CreateQuantification\AddResources.cs" />
     <Compile Include="Quantification\CreateQuantification\ApiUtility.cs" />
-    <Compile Include="Quantification\CreateQuantification\CreateQuantification.cs">
+    <Compile Include="Quantification\CreateQuantification\CreateQuantification_KR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Quantification\CreateQuantification\CreateQuantification.Designer.cs">
-      <DependentUpon>CreateQuantification.cs</DependentUpon>
+    <Compile Include="Quantification\CreateQuantification\CreateQuantification_KR.Designer.cs">
+      <DependentUpon>CreateQuantification_KR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Quantification\CreateQuantification\CreateQuantification_AR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Quantification\CreateQuantification\CreateQuantification_AR.Designer.cs">
+      <DependentUpon>CreateQuantification_AR.cs</DependentUpon>
     </Compile>
     <Compile Include="Quantification\CreateQuantification\CreateTO.cs" />
     <Compile Include="Quantification\CreateQuantification\DatabaseUtility.cs" />
@@ -298,8 +305,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Quantification\CreateQuantification\CreateQuantification.resx">
-      <DependentUpon>CreateQuantification.cs</DependentUpon>
+    <EmbeddedResource Include="Quantification\CreateQuantification\CreateQuantification_KR.resx">
+      <DependentUpon>CreateQuantification_KR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Quantification\CreateQuantification\CreateQuantification_AR.resx">
+      <DependentUpon>CreateQuantification_AR.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

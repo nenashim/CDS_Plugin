@@ -1,6 +1,6 @@
 ﻿namespace CDS_Plugin.Quantification.CreateQuantification
 {
-    partial class CreateQuantification
+    partial class CreateQuantification_KR
     {
         /// <summary>
         /// Required designer variable.
@@ -73,9 +73,9 @@
             this.label1.ForeColor = System.Drawing.Color.Black;
             this.label1.Location = new System.Drawing.Point(6, 59);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(125, 16);
+            this.label1.Size = new System.Drawing.Size(95, 16);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Количество секций:";
+            this.label1.Text = "Номер секций:";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // OK_button
@@ -95,7 +95,7 @@
             this.tabConsole.Location = new System.Drawing.Point(12, 12);
             this.tabConsole.Name = "tabConsole";
             this.tabConsole.SelectedIndex = 0;
-            this.tabConsole.Size = new System.Drawing.Size(178, 261);
+            this.tabConsole.Size = new System.Drawing.Size(179, 261);
             this.tabConsole.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabConsole.TabIndex = 8;
             // 
@@ -106,13 +106,15 @@
             this.tab_header.Controls.Add(this.OK_button);
             this.tab_header.Controls.Add(this.lb_cat);
             this.tab_header.Controls.Add(this.label1);
+            this.tab_header.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tab_header.Location = new System.Drawing.Point(4, 22);
             this.tab_header.Name = "tab_header";
             this.tab_header.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_header.Size = new System.Drawing.Size(170, 235);
+            this.tab_header.Size = new System.Drawing.Size(171, 235);
             this.tab_header.TabIndex = 0;
             this.tab_header.Text = "Объект";
             this.tab_header.UseVisualStyleBackColor = true;
+            this.tab_header.Click += new System.EventHandler(this.tab_header_Click);
             // 
             // Box_countSection
             // 
@@ -136,7 +138,7 @@
             this.tab_param.Location = new System.Drawing.Point(4, 22);
             this.tab_param.Name = "tab_param";
             this.tab_param.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_param.Size = new System.Drawing.Size(170, 235);
+            this.tab_param.Size = new System.Drawing.Size(171, 235);
             this.tab_param.TabIndex = 1;
             this.tab_param.Text = "Параметры";
             this.tab_param.UseVisualStyleBackColor = true;
@@ -147,7 +149,7 @@
             this.text_param.Name = "text_param";
             this.text_param.Size = new System.Drawing.Size(151, 20);
             this.text_param.TabIndex = 6;
-            this.text_param.Text = "ADSK_Этаж";
+            this.text_param.Text = "Имя";
             // 
             // label4
             // 
@@ -166,7 +168,7 @@
             this.text_cat.Name = "text_cat";
             this.text_cat.Size = new System.Drawing.Size(151, 20);
             this.text_cat.TabIndex = 4;
-            this.text_cat.Text = "Объект";
+            this.text_cat.Text = "Стадия возведения";
             // 
             // label3
             // 
@@ -179,14 +181,16 @@
             this.label3.TabIndex = 3;
             this.label3.Text = "Наименование категории:";
             // 
-            // CreateQuantification
+            // CreateQuantification_KR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(198, 285);
+            this.ClientSize = new System.Drawing.Size(197, 286);
             this.Controls.Add(this.tabConsole);
-            this.Name = "CreateQuantification";
-            this.Text = "CreateQuantification";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Name = "CreateQuantification_KR";
+            this.Text = "Quanti";
+            this.Load += new System.EventHandler(this.CreateQuantification_Load);
             this.tabConsole.ResumeLayout(false);
             this.tab_header.ResumeLayout(false);
             this.tab_header.PerformLayout();

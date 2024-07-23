@@ -223,12 +223,18 @@
             <RibbonPanelSource x:Uid="RibbonPanelSource_RibbonPanel_3" KeyTip="T4" Title="Quanti">
 
 
-                <local:NWRibbonButton x:Uid="Button_4.1" Id="AutoQuanti"
+                <local:NWRibbonButton x:Uid="Button_4.1" Id="AutoQuantiAR"
                            Size="Large"
                            KeyTip="B10"
                            ShowText="True"
-                           Text="Auto"
+                           Text="АР"
                            Orientation="Vertical"/>
+                <local:NWRibbonButton x:Uid="Button_4.2" Id="AutoQuantiKR"
+                             Size="Large"
+                             KeyTip="B11"
+                             ShowText="True"
+                             Text="КР"
+                             Orientation="Vertical"/>
 
             </RibbonPanelSource>
 
