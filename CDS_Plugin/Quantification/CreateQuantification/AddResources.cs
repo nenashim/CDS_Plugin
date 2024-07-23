@@ -25,7 +25,7 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                 string sql = "INSERT INTO TK_Step(itemID, name, description) VALUES(@itemID, @name, @description)";
                 using (NavisworksTransaction trans = docTakeoff.Database.BeginTransaction(DatabaseChangedAction.Edited))
                 {
-
+                    //вв
                     using (NavisworksCommand cmd = docTakeoff.Database.Value.CreateCommand())
                     {
                         NavisworksParameter p = cmd.CreateParameter();
