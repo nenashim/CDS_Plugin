@@ -111,126 +111,117 @@ namespace CDS_Plugin.Quantification.CreateQuantification
 
                 for (int i = 0; i < sections; i++)
                 {
-                    List<string> List_sections = getDataForProp(category_get, property_section);
-                    List_sections.Distinct().ToList();
-
+                    //Создаем список параметров стадий из проекта, фильтруем уникальные значения
+                    List<string> List_sections = getDataForProp(category_get, property_section).Distinct().ToList();
+                    //Создаем список параметров этажей из проекта, фильтруем уникальные значения
                     List<string> List_floors = getDataForProp(category_get, property_floor).Distinct().ToList();
-                    int lastfloor = List_floors.Count();
-
+                    int lastfloor = List_floors.Count();//Получаем общее кол-во элементов в листе
+                    //Создаем родительскую папку с названием проекта
                     FolderItem pFold = selectionSets.Value.FirstOrDefault(x => x.DisplayName == folder) as FolderItem;
-
-                    FolderItem sFolder = new FolderItem();    //Папка секций
+                    //Создаем папку с именем секции первого вложения в родительскую папку
+                    FolderItem sFolder = new FolderItem();//Папка секций
                     sFolder.DisplayName = sectionstr + List_sections[i].ToString();
                     selectionSets.InsertCopy((GroupItem)pFold, 0, sFolder);
-
+                    //Проходим по всему списку этажей
                     for (int j = 0; j < lastfloor; j++)
                     {
-                        List<string> List_category = getDataForProp(category, property_category);
-                        List_category.Distinct().ToList();
+                        //Создаем список параметров категорий из проекта, фильтруем уникальные значения
+                        List<string> List_category = getDataForProp(category, property_category).Distinct().ToList();
 
                         FolderItem FloorsFolder = new FolderItem(); //Папка этажей
                         FloorsFolder.DisplayName = List_floors[j].ToString() + floorstr;
-
+                        //Создаем поисковый набор по этажам и секциям, чтобы икслючить этажи в секциях, в которых нет объектов
                         var search_floor = new Search();
                         search_floor.Locations = SearchLocations.DescendantsAndSelf;
                         search_floor.Selection.SelectAll();
-                        SearchCondition search_section = SearchCondition.HasPropertyByDisplayName(category_get, property_section);
-                        SearchCondition search_floors = SearchCondition.HasPropertyByDisplayName(category_get, property_floor);
-                        search_floor.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));
-                        search_floor.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));
-
+                        SearchCondition search_section = SearchCondition.HasPropertyByDisplayName(category_get, property_section);//Условие поиска имеет параметр ADSK_Номер секции 
+                        SearchCondition search_floors = SearchCondition.HasPropertyByDisplayName(category_get, property_floor);//Условие поиска имеет параметр ADSK_Этаж 
+                        search_floor.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));//Добавляем в поиск значение секции 
+                        search_floor.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));//Добавляем в поиск значение этажа 
+                        //Если поисковый набор равен нуля, ничего не создаем
                         if (search_floor.FindAll(App.ActiveDocument, true).Count == 0)
-                        {
-                            continue;
-                        }
+                        { continue; }
+                        //Иначе, создаем папку с этажом
                         selectionSets.InsertCopy((GroupItem)pFold.Children[0], 0, FloorsFolder);
-
+                        //Проходим по всему списку категорий
                         for (int k = 0; k < List_category.Count(); k++)
                         {
-                            FolderItem CategoryFolder = new FolderItem(); //Создаем папку категорий
+                            FolderItem CategoryFolder = new FolderItem(); //Папка категорий
                             CategoryFolder.DisplayName = List_category[k].ToString();
-                            var FloorsFolder_Chil = pFold.Children[0] as FolderItem;
-
+                            var FloorsFolder_Chil = pFold.Children[0] as FolderItem; //Создаем папку категорий
+                            //Если у нас конкретная категория существует на этаже и в секции, то создаем папку
                             if (Check_search_category(category_get, category, property_section,
-                                   property_floor, property_category, property_type, List_sections,
+                                   property_floor, property_category, List_sections,
                                    List_category, i, List_floors, j, k))
                             {
                                 selectionSets.InsertCopy((GroupItem)FloorsFolder_Chil.Children[0], 0, CategoryFolder);
                             }
-                           
-                            //Собираем лист рабочих наборов
-                            List<string> List_workingset = getDataForProp(category, "Рабочий набор");
-                            List_workingset.Distinct().ToList();
-
+                            //Собираем лист рабочих наборов из проекта, фильтруем уникальные значения
+                            List<string> List_workingset = getDataForProp(category, "Рабочий набор").Distinct().ToList();
+                            //Проходим по всему списку рабочих наборов
                             for (int w = 0; w < List_workingset.Count(); w++)
                             {
                                 FolderItem WorkingsetFolder = new FolderItem(); //Создаем папку рабочих наборов
                                 WorkingsetFolder.DisplayName = List_workingset[w].ToString();
                                 var CategoryFolder_Chil = FloorsFolder_Chil.Children[0] as FolderItem;
-
+                                //Создаем поисковый набор по рабочим наборам объектов, чтобы икслючить рабочие наборы, в которых нет объектов
                                 var search_workingset_folder = new Search();
                                 search_workingset_folder.Locations = SearchLocations.DescendantsAndSelf;
                                 search_workingset_folder.Selection.SelectAll();
 
-                                SearchCondition search_workingset = SearchCondition.HasPropertyByDisplayName(category, "Рабочий набор");
-                                search_workingset_folder.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));
-                                search_workingset_folder.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));
-                                search_workingset_folder.SearchConditions.Add(search_workingset.EqualValue(VariantData.FromDisplayString(List_workingset[w].ToString())));
-
+                                SearchCondition search_workingset = SearchCondition.HasPropertyByDisplayName(category, "Рабочий набор");//Условие поиска имеет параметр Рабочий набор 
+                                search_workingset_folder.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));//Добавляем в поиск значение секции 
+                                search_workingset_folder.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));//Добавляем в поиск значение этажа 
+                                search_workingset_folder.SearchConditions.Add(search_workingset.EqualValue(VariantData.FromDisplayString(List_workingset[w].ToString())));//Добавляем в поиск значение рабочего набора
+                                //Если поисковый набор пуст, то пропускаем его и не создаем папку
                                 if (search_workingset_folder.FindAll(App.ActiveDocument, true).Count == 0)
-                                {
-                                    continue;
-                                }
-
+                                { continue; }
+                                //Если у нас конкретный рабочий набор существует на этаже и в секции, то создаем папку
                                 if (Check_search_workingset(category_get, category, property_section, 
                                     property_floor, property_category, property_type, List_sections, 
                                     List_category, i, List_floors, j, k, List_workingset, w))
                                 {
-                                    selectionSets.InsertCopy((GroupItem)CategoryFolder_Chil.Children[0], 0, WorkingsetFolder);
+                                    selectionSets.InsertCopy((GroupItem)CategoryFolder_Chil.Children[0], 0, WorkingsetFolder);//Создаем папку рабочих наборов
                                 }
 
-                                //Собираем лист материалов деталей
+                                //Собираем лист материалов деталей из проекта, фильтруем уникальные значения
                                 List<string> List_datail = getDataForProp("Элемент", property_material).Distinct().ToList();
-
-                                //Собираем лист толщин деталей
+                                //Собираем лист толщин деталей из проекта, фильтруем уникальные значения
                                 List<DataProperty> List_thickness_find = getDataForProp_Value(category, "Толщина").Distinct().ToList();
-
-                                //Собираем лист имен типов
+                                //Собираем лист имен типов из проекта, фильтруем уникальные значения
                                 List<string> List_type = getDataForProp(category, property_type).Distinct().ToList();
 
                                 //Если внутри поискового набора есть Детали, то идем по пути добавления поисковых наборов с наименованием материала
                                 if (Check_detail(category_get, category, property_section, property_floor, property_category, property_type, List_sections, List_category, i, List_floors, j, k))
                                 {
-                                    //Собирает поисковые наборы стен, в которых есть Детали
+                                    //Собирает поисковые наборы стен, в которых есть Детали. Проходим по листу деталей
                                     for (int d = 0; d < List_datail.Count(); d++)
                                     {
-                                        //сортировка по толщине
+                                        //Сортируем детали по толщине (параметр). Проходим по листу толщин
                                         for (int thicknes = 0; thicknes < List_thickness_find.Count(); thicknes++)
                                         {
                                             curSelect.SelectAll();
+                                            //Создаем поисковый набор по этажам, секциям, категориям, типам, рабочим наборам, материалу и толщинам
                                             var search = new Search();
                                             search.Locations = SearchLocations.DescendantsAndSelf;
                                             search.Selection.SelectAll();
-                                            string short_values_datail = List_datail[d].ToString();
-                                            //.Split('"').Skip(1).FirstOrDefault().ToString()
 
-                                            SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);
-                                            SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);
-                                            SearchCondition search_material = SearchCondition.HasPropertyByDisplayName("Элемент", property_material);
-                                            SearchCondition search_thickness = SearchCondition.HasPropertyByDisplayName(category, "Толщина");
+                                            SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);//Условие поиска имеет параметр Категория
+                                            SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);//Условие поиска имеет параметр Тип
+                                            SearchCondition search_material = SearchCondition.HasPropertyByDisplayName("Элемент", property_material);//Условие поиска имеет в элементе параметр Материал
+                                            SearchCondition search_thickness = SearchCondition.HasPropertyByDisplayName(category, "Толщина");//Условие поиска имеет параметр Толщина
 
-                                            search.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));
-                                            search.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));
-                                            search.SearchConditions.Add(search_workingset.EqualValue(VariantData.FromDisplayString(List_workingset[w].ToString())));
-                                            search.SearchConditions.Add(search_category.EqualValue(VariantData.FromDisplayString(List_category[k].ToString())));
-                                            search.SearchConditions.Add(search_material.EqualValue(VariantData.FromDisplayString(short_values_datail)));
-
-                                            //Создаем отдельный поисковый запрос на толщину каждой детали
-                                            search.SearchConditions.Add(search_thickness.EqualValue(List_thickness_find[thicknes].Value));
-
+                                            search.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));//Добавляем в поиск значение секции 
+                                            search.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));//Добавляем в поиск значение этажа 
+                                            search.SearchConditions.Add(search_workingset.EqualValue(VariantData.FromDisplayString(List_workingset[w].ToString())));//Добавляем в поиск значение рабочего набора 
+                                            search.SearchConditions.Add(search_category.EqualValue(VariantData.FromDisplayString(List_category[k].ToString())));//Добавляем в поиск значение категории 
+                                            search.SearchConditions.Add(search_material.EqualValue(VariantData.FromDisplayString(List_datail[d].ToString())));//Добавляем в поиск значение материала детали     
+                                            search.SearchConditions.Add(search_thickness.EqualValue(List_thickness_find[thicknes].Value));//Создаем отдельный поисковый запрос на толщину каждой детали
+                                            //Если поисковый набор больше 0 и материал не содержит "Возд" (для того, чтобы избежать детали с воздушной прослойкой в наименовании) создаем поисковый набор
                                             if (search.FindAll(App.ActiveDocument, true).Count > 0 && !List_datail[d].Contains("Возд"))
                                             {
-                                                string value_datail_with_thickness = short_values_datail + ", " + (List_thickness_find[thicknes].Value.ToDoubleLength() / 3.28).ToString().Substring(0, 5);
+                                                //Привидение строки в вид, как это должно выглядеть в Navis -> футы переводим в метры, разделяем "," после имени материала
+                                                string value_datail_with_thickness = List_datail[d] + ", " + (List_thickness_find[thicknes].Value.ToDoubleLength() / 3.28).ToString().Substring(0, 5);
 
                                                 var set = new SelectionSet(search) { DisplayName = value_datail_with_thickness };
                                                 selectionSets.AddCopy(set);
@@ -250,18 +241,16 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                                     //Собирает поисковые наборы стен, в которых нет Деталей 
                                     for (int t = 0; t < List_type.Count(); t++)
                                     {
-
                                         curSelect.SelectAll();
+                                        //Создаем поисковый набор по этажам, секциям, категориям, типам, рабочим наборам, материалу и с условием без деталей
                                         var search = new Search();
                                         search.Locations = SearchLocations.DescendantsAndSelf;
                                         search.Selection.SelectAll();
 
-                                        //SearchCondition search_floors_new = SearchCondition.HasPropertyByDisplayName(category, property);
-                                        SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);
-                                        SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);
-                                        SearchCondition search_material = SearchCondition.HasPropertyByDisplayName("Элемент", property_material);
+                                        SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);//Условие поиска имеет параметр Категория
+                                        SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);//Условие поиска имеет параметр Тип
+                                        SearchCondition search_material = SearchCondition.HasPropertyByDisplayName("Элемент", property_material);//Условие поиска имеет в элементе параметр Материал
                                         SearchCondition search_object = SearchCondition.HasPropertyByDisplayName("Объект", "Имя").Negate();
-
 
                                         search.SearchConditions.Add(search_section.EqualValue(VariantData.FromDisplayString(List_sections[i].ToString())));
                                         search.SearchConditions.Add(search_floors.EqualValue(VariantData.FromDisplayString(List_floors[j].ToString())));
@@ -441,7 +430,7 @@ namespace CDS_Plugin.Quantification.CreateQuantification
         }
         public bool Check_search_category (string category_get, string category,
             string property_section, string property, string property_category,
-            string property_type, List<string> values_sections, List<string> values_category,
+            List<string> values_sections, List<string> values_category,
             int i, List<string> values_floors,int j, int k)
         {
             var search = new Search();

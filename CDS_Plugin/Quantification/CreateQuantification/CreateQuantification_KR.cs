@@ -1,23 +1,9 @@
-﻿using Autodesk.Navisworks.Api.ComApi;
-using Autodesk.Navisworks.Api;
+﻿using Autodesk.Navisworks.Api;
 using System;
 using App = Autodesk.Navisworks.Api.Application;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using ComApi = Autodesk.Navisworks.Api.Interop.ComApi;
-using ComApiBridge = Autodesk.Navisworks.Api.ComApi;
-using System.Windows.Documents;
-using Newtonsoft.Json.Linq;
-using static System.Collections.Specialized.BitVector32;
-using Microsoft.Office.Interop.Excel;
-using static CDS_Plugin.Quantification.CreateQuantification.ApiUtility;
 
 namespace CDS_Plugin.Quantification.CreateQuantification
 {
@@ -74,11 +60,12 @@ namespace CDS_Plugin.Quantification.CreateQuantification
 
         private void button1_Click(object sender, EventArgs e)
         {
+
             if (!Count_section_OK()){
                 MessageBox.Show("Не так в секции"); return; }
             if (!Name_OK()) {
                 MessageBox.Show("Не так в именем"); return; }
-
+               //Определяем основные переменные для дальнейшего использования
                 string folder = textBox_nameObject.Text;
                 string category_stage = text_cat.Text;
                 string category = "Объект";
@@ -87,7 +74,6 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                 string property_category = "Категория";
                 string property_type = "Тип";
                 string sectionstr = "С ";
-                Visible = false;
                 Document activeDoc = App.ActiveDocument;
                 var curSelect = activeDoc.CurrentSelection;
                 var selectionSets = activeDoc.SelectionSets;
@@ -121,7 +107,7 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                     //Проходим по всему списку стадий
                     for (int j = 0; j < values_stages.Count(); j++)
                     {
-                        //Создаем список категорий элементов из проекта, , фильтруем уникальные значения
+                        //Создаем список категорий элементов из проекта, фильтруем уникальные значения
                         List<string> values_category = getDataForProp(category, property_category).Distinct().ToList();
 
                         FolderItem StagesFolder = new FolderItem(); //Создаем папку по стад
@@ -144,35 +130,36 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                         //Проходим по всему списку категорий
                         for (int k = 0; k < values_category.Count(); k++)
                         {
-                            FolderItem CategoryFolder = new FolderItem(); //Папка категорий
+                            FolderItem CategoryFolder = new FolderItem(); //Создаем папку категорий
                             CategoryFolder.DisplayName = values_category[k].ToString();
                             var FloorsFolder_Chil = pFold.Children[0] as FolderItem;
-
+                            //Если у нас конкретная категория существует на этаже, то создаем папку
                             if (Check_search_category_KR( category_stage,  category,
                                 property_section,  property_category,  property_stage
                                 ,  values_category,  values_stages,  j,  k))
                             {
+                                //Создание папки с именем стадии третьего вложения в родительскую (первое вложение в папку секции)   
                                 selectionSets.InsertCopy((GroupItem)FloorsFolder_Chil.Children[0], 0, CategoryFolder);
                             }
-
-                            List<string> values_type = getDataForProp(category, property_type);
-                            values_type.Distinct().ToList();
-
+                            //Создаем список типов элементов из проекта, фильтруем уникальные значения
+                            List<string> values_type = getDataForProp(category, property_type).Distinct().ToList();
+                                
+                                //Проходим по всему списку типов   
                                 for (int t = 0; t < values_type.Count(); t++)
                                 {
+                                    //Создаем поисковый набор объектов по секции, этажу и типу
                                     var search = new Search();
                                     search.Locations = SearchLocations.DescendantsAndSelf;
-                                    search.Selection.SelectAll();
+                                    search.Selection.SelectAll();//Выделяем все элементы
 
-                                    SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);
-                                    SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);
+                                    SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);//Условие поиска имеет параметр категорию 
+                                    SearchCondition search_type = SearchCondition.HasPropertyByDisplayName(category, property_type);//Условие поиска имеет параметр тип 
 
-                                    search.SearchConditions.Add(search_stages.EqualValue(VariantData.FromDisplayString(values_stages[j].ToString())));
-                                    search.SearchConditions.Add(search_category.EqualValue(VariantData.FromDisplayString(values_category[k].ToString())));
-                                    search.SearchConditions.Add(search_type.EqualValue(VariantData.FromDisplayString(values_type[t].ToString())));
-    
-                                    //прописать поисковый запрос, как неравно - делали
-
+                                    search.SearchConditions.Add(search_stages.EqualValue(VariantData.FromDisplayString(values_stages[j].ToString())));//Добавляем в поиск значение секции 
+                                    search.SearchConditions.Add(search_category.EqualValue(VariantData.FromDisplayString(values_category[k].ToString())));//Добавляем в поиск значение категории 
+                                    search.SearchConditions.Add(search_type.EqualValue(VariantData.FromDisplayString(values_type[t].ToString())));//Добавляем в поиск значение типа 
+                                    
+                            //Если поисковый набор больше нуля, то создаем его
                                     if (search.FindAll(App.ActiveDocument, true).Count > 0)
                                     {
                                         var set = new SelectionSet(search) { DisplayName = values_type[t] };
@@ -190,17 +177,13 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                                 }    
                         }
                     }
-                
                 }
                 catch (Exception)
                 {
-
                 MessageBox.Show("Не удалось создать поисковые наборы");
-
-            }
-
+                }
+            //Обращаемся к классу Main, где идет добавление элементов Quantification по иерархии поисковых наборов
             var tp7 = new Main();
-
             try
             {
                 string[] a = { folder };
@@ -211,12 +194,11 @@ namespace CDS_Plugin.Quantification.CreateQuantification
                 MessageBox.Show(ex.Message);
             }
         }
+        //Метод, где забираем строки параметров из элементов Navisworks
         public static List<string> getDataForProp(string cat_param, string prop_param)
         {
             ModelItemEnumerableCollection items = App.ActiveDocument.Models.RootItemDescendants;
-
             List<string> list = new List<string>();
-
             foreach (ModelItem item in items)
             {
                 foreach (var cat in item.PropertyCategories)
@@ -238,10 +220,9 @@ namespace CDS_Plugin.Quantification.CreateQuantification
 
             }
             list.Sort();
-
             return list;
         }
-
+        //Проверка соответствия параметров через наличие элементов в поисковых наборах для того, чтобы не создавать пустые папки 
         public bool Check_search_category_KR (string category_stage, string category,
             string property_section, string property_category, string property_stage
           , List<string> values_category, List<string> values_stages,int j, int k)
@@ -250,7 +231,6 @@ namespace CDS_Plugin.Quantification.CreateQuantification
             search.Locations = SearchLocations.DescendantsAndSelf;
             search.Selection.SelectAll();
 
-            //SearchCondition search_floors_new = SearchCondition.HasPropertyByDisplayName(category, property);
             SearchCondition search_stages = SearchCondition.HasPropertyByDisplayName(category_stage, property_stage);
             SearchCondition search_category = SearchCondition.HasPropertyByDisplayName(category, property_category);
 
@@ -264,31 +244,15 @@ namespace CDS_Plugin.Quantification.CreateQuantification
             }
             return true;
         }
-  
-
         private void textBox_nameObject_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        {}
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-        {
-
-        }
-
+        {}
         private void textBox_countSection_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        {}
         private void CreateQuantification_Load(object sender, EventArgs e)
-        {
-
-        }
-
+        {}
         private void tab_header_Click(object sender, EventArgs e)
-        {
-
-        }
+        {}
     }
 }
